@@ -1,0 +1,4 @@
+ansible-playbook ./playbooks/osync_fresh_install.yml -e "version=R14.5 url=https://a-r10-dms-uat4-chq-lb-d.stbc3.jstest3.net/StoreWebServices" -i ./inventory/UAT1/UAT1_azure_rm.yml
+
+ansible-playbook ./playbooks/osync_upgrade_install.yml -e "version=R15.0 url=https://a-r10-dms-uat4-chq-lb-d.stbc3.jstest3.net/StoreWebServices" -i ./inventory/UAT1/UAT1_azure_rm.yml
+

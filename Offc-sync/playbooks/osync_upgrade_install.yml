@@ -1,0 +1,44 @@
+---
+- hosts: tag_RAP
+    
+  tasks:
+    - name: Get Hostname
+      win_shell: hostname
+      register: host_out
+  
+    - debug:
+        var: host_out.stdout_lines
+
+
+    - name: Creating a Backup Folder to hold older version of Offc Sync Files
+      win_shell: New-Item -Path "C:\\Retalix\\Pre_{{ version }}_backup" -ItemType Directory -Force
+
+    - debug:
+        msg: "Successfully created, Backup folder"
+
+    - name: Clearing Old files in Back up Folder
+      win_shell: Remove-Item "C:\\Retalix\\Pre_{{ version }}_backup\*"
+
+    - debug:
+        msg: "Successfully Cleared Old files of, Backup folder"
+
+    
+    - name: Moving all older version files to backup folder
+      win_shell: Copy-Item –Path "C:\Retalix\OffcSync\*" -Destination "C:\\Retalix\\Pre_{{ version }}_backup" -Force
+
+
+    - name: Uninstalling Older Version of Offc Sync
+      win_shell: Remove-Item C:\Retalix\OffcSync\*
+
+
+    - name: Copying New Version Executables into OffcSync folder
+      win_copy:
+        src: "{{ version}}_offc_sync/"
+        dest: C:\Retalix\OffcSync\
+        force: yes
+        
+    - name: Editing the Config file as per Env
+      win_shell: ((Get-Content -path "C:\Retalix\OffcSync\config.xml" -Raw) -replace 'https://a-r10-dms-dummyenv-chq-lb-d.stbc3.jstest3.net/StoreWebServices', '{{ url }}') | Set-Content -Path "C:\Retalix\OffcSync\config.xml"
+    
+    - debug:
+        msg: "Successfully, Copied New Version files into OffcSync folder"

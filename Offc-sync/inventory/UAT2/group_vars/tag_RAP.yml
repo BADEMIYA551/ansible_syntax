@@ -1,0 +1,6 @@
+---
+  ansible_user: bade1
+  ansible_password: Syed@Aeiou@9182582365 
+  ansible_connection: winrm
+  ansible_winrm_transport: ntlm
+  ansible_winrm_server_cert_validation: ignore

@@ -1,0 +1,35 @@
+- hosts: tag_RAP
+ 
+  tasks:
+    - name: Get Hostname
+      win_shell: hostname
+      register: host_out
+  
+    - debug:
+        var: host_out.stdout_lines
+
+    - name: Creating Offc_Sync folder
+      win_shell: New-Item -Path 'C:\Retalix\OffcSync' -ItemType Directory -Force
+    
+    - debug:
+        msg: "Successfully, Created OffcSync folder"
+        
+ 
+    - name: Clearing contents of OffcSync folder
+      win_shell: Remove-Item "C:\\Retalix\\OffcSync\\*"
+
+    - debug:
+        msg: "Successfully Cleared Old files of OffcSync folder"
+
+   
+    - name: Copying the required version files into OffcSync Folder
+      win_copy:
+        src: "{{ version}}_offc_sync/"
+        dest: C:\Retalix\OffcSync\
+        force: yes
+    
+    - name: Editing the Config file as per Env
+      win_shell: ((Get-Content -path "C:\Retalix\OffcSync\config.xml" -Raw) -replace 'https://a-r10-dms-dummyenv-chq-lb-d.stbc3.jstest3.net/StoreWebServices', '{{ url }}') | Set-Content -Path "C:\Retalix\OffcSync\config.xml"
+    
+    - debug:
+        msg: "Successfully, Copied the required files into OffcSync folder"

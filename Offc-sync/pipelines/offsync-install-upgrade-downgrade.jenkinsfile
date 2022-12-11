@@ -1,0 +1,47 @@
+pipeline
+{
+    agent any
+
+    
+    stages
+    {
+        stage('OffcSync-Install-Update')
+        {
+            steps
+            {
+                deleteDir()
+                git branch: 'main', credentialsId: 'Github-551', url: 'https://github.com/BADEMIYA551/OffcSync-Install-Update.git'
+                
+                script
+                {
+                 
+                    if((envtype == '-- select --') || (version == '-- select --') || (installtype == '-- select --') || (url == '-- select --')) 
+                    {	
+                        echo "======================== please choose the build parameters properly ========================"
+                        
+                    }
+                    
+                    else
+                    {	
+                        dir("./Offc-sync/")
+                        { 
+                        
+                            ansiblePlaybook(
+                                playbook: "./playbooks/osync_${installtype}_install.yml" ,
+                                inventory: "./inventory/${envtype}/azure_rm.yml" ,
+                                extras: " -e 'version=${version} url=${url}' "
+                            )
+                           
+                           //sh "ansible-playbook ./playbooks/osync_${installtype}_install.yml -e 'version=${version} url=${url}' -i ./inventory/${envtype}/azure_rm.yml"  
+                        }
+                    }
+ 
+                   
+                } 
+             
+            }
+            
+        }
+
+    }
+}
